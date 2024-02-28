@@ -1,0 +1,2 @@
+# ImaginaryCraftManager
+一个使用go编写的minecraft服务器管理面板及拓展
