@@ -6,44 +6,41 @@ import (
 	"os/exec"
 )
 
-func cmdRecording(serverPath string) {
-	cmd := exec.Command("cmd.exe", "/c", "start.bat")
-	cmd.Dir = serverPath
+func CloseProcessAndPipe(cmd *exec.Cmd) error {
+	if err := cmd.Process.Kill(); err != nil {
+		fmt.Println("进程关闭失败:", err)
+		return err
+	}
+	return nil
+}
 
-	// 创建一个管道来获取命令的标准输出和标准错误输出
+func CmdRecording(cmd *exec.Cmd) (javaPID int, err error) {
+	var outputLines []string
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		fmt.Println("Error creating StdoutPipe:", err)
-		return
-	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		fmt.Println("Error creating StderrPipe:", err)
-		return
+		fmt.Println("获取进程管道失败:", err)
+		return 0, err
 	}
 
-	// 启动命令
 	if err := cmd.Start(); err != nil {
-		fmt.Println("Error starting command:", err)
-		return
+		fmt.Println("指令执行失败:", err)
+		return 0, err
 	}
 
-	// 从标准输出和标准错误输出读取命令的输出
 	go func() {
 		scanner := bufio.NewScanner(stdout)
 		for scanner.Scan() {
-			fmt.Println(scanner.Text())
-		}
-	}()
-	go func() {
-		scanner := bufio.NewScanner(stderr)
-		for scanner.Scan() {
+			outputLines = append(outputLines, scanner.Text())
 			fmt.Println(scanner.Text())
 		}
 	}()
 
-	// 等待命令执行完成
+	javaPID = cmd.Process.Pid
+	fmt.Println(javaPID)
+
 	if err := cmd.Wait(); err != nil {
-		fmt.Println("Command finished with error:", err)
+		fmt.Println("指令执行失败:", err)
+		return javaPID, err
 	}
+	return javaPID, nil
 }

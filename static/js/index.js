@@ -1,12 +1,28 @@
 
-var name = "fabric-server/mods";
-var xhr = new XMLHttpRequest();
-xhr.open("POST", "/api/message", true);
-xhr.setRequestHeader("Content-Type", "application/json");
-xhr.onreadystatechange = function () {
-    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-        var response = JSON.parse(xhr.responseText);
-        document.getElementById("response").innerText = response.text;
-    }
-};
-xhr.send(JSON.stringify({ text: name }));
+function showMods() {
+    fetch('/api/mods')
+        .then(response => response.json())
+        .then(data => {
+            var mods = data["mods"];
+            for(var i=0;i<mods.length;i++){
+                document.getElementById('modsList').innerHTML += `${mods[i]}<br>`;              
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function startProcess() {
+    fetch('/control/start')
+        .then(response => response.text())
+        .then(data => alert(data))
+        .catch(error => console.error('Error:', error));
+}
+
+function stopProcess() {
+    fetch('/control/stop')
+        .then(response => response.text())
+        .then(data => alert(data))
+        .catch(error => console.error('Error:', error));
+}
+
+showMods();
