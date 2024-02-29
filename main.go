@@ -7,17 +7,31 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os/exec"
 )
 
-var cmd *exec.Cmd = exec.Command("cmd.exe", "/c", "start.bat")
+var manager *serverCmd.CommandManager
 
 func main() {
-	// 设置路由
-	http.HandleFunc("/api/mods", ShowMods)
 
-	http.HandleFunc("/control/start", StartCmd)
-	http.HandleFunc("/control/stop", StopCmd)
+	// 设置路由
+	http.HandleFunc("/api/mods", func(w http.ResponseWriter, r *http.Request) {
+		ShowMods(w, r)
+	})
+	http.HandleFunc("/control/servercmd/start", func(w http.ResponseWriter, r *http.Request) {
+		manager, err := serverCmd.NewCmdManager("fabric-server")
+		if err != nil {
+			fmt.Println("cmd管道创建失败:", err)
+			return
+		}
+		StartCmd(w, r, manager)
+	})
+	http.HandleFunc("/control/servercmd/stop", func(w http.ResponseWriter, r *http.Request) {
+		if manager == nil {
+			fmt.Println("Manager 未初始化")
+			return
+		}
+		StopCmd(w, r, manager)
+	})
 
 	http.Handle("/", http.FileServer(http.Dir("static")))
 
@@ -49,22 +63,17 @@ func ShowMods(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func StartCmd(w http.ResponseWriter, r *http.Request) {
-	cmd.Dir = "fabric-server"
-	javaPid, err := serverCmd.CmdRecording(cmd)
+func StartCmd(w http.ResponseWriter, r *http.Request, cm *serverCmd.CommandManager) {
+	javaPid, err := serverCmd.CmdRecording(cm)
 	fmt.Println(javaPid)
 	if err != nil {
 		return
 	}
 }
 
-func StopCmd(w http.ResponseWriter, r *http.Request) {
-	cmd.Dir = "fabric-server"
-	//暴力关闭Java
-	//因为我也没想到更好的办法
-	//我不清楚这样做，会不会把所有需要java运行的程序都关了 ^_^
-	exec.Command("taskkill", "/f", "/im", "java.exe").Run()
-	err := serverCmd.CloseProcessAndPipe(cmd)
+func StopCmd(w http.ResponseWriter, r *http.Request, cm *serverCmd.CommandManager) {
+
+	err := serverCmd.CloseProcessAndPipe(cm)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

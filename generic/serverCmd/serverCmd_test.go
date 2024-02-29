@@ -2,27 +2,49 @@ package serverCmd
 
 import (
 	"fmt"
-	"os/exec"
 	"testing"
+	"time"
 )
 
 func TestServerCmd(t *testing.T) {
-	serverPath := "..\\..\\fabric-server"
-	cmd := exec.Command("cmd.exe", "/c", "start.bat")
-	cmd.Dir = serverPath
+	manager, err := NewCmdManager("..\\..\\fabric-server")
+	if err != nil {
+		fmt.Println("cmd管道创建失败:", err)
+		return
+	}
 
-	// 启动命令并记录输出
-	javaPid, err := CmdRecording(cmd)
+	//两次启动进程测试
+	javaPid, err := CmdRecording(manager)
 	fmt.Println(javaPid)
 	if err != nil {
 		return
 	}
 
-	// 在这里执行一些其他操作，然后当需要时关闭命令及其管道
-	fmt.Println("Press enter to close the process and pipe...")
-	fmt.Scanln()
+	time.Sleep(5 * time.Second)
+	fmt.Println("程序第一次启动完毕，开始终止进程……")
 
-	err = CloseProcessAndPipe(cmd)
+	err = CloseProcessAndPipe(manager)
+	if err != nil {
+		fmt.Println("Error closing process and pipe:", err)
+	}
+	time.Sleep(5 * time.Second)
+	fmt.Println("准备第二次开启进程……")
+
+	manager, err = NewCmdManager("..\\..\\fabric-server")
+	if err != nil {
+		fmt.Println("cmd管道创建失败:", err)
+		return
+	}
+
+	javaPid, err = CmdRecording(manager)
+	fmt.Println(javaPid)
+	if err != nil {
+		return
+	}
+	time.Sleep(5 * time.Second)
+	fmt.Println("第二次启动进程关闭……")
+
+	err = CloseProcessAndPipe(manager)
 	if err != nil {
 		fmt.Println("Error closing process and pipe:", err)
 	}

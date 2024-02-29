@@ -12,16 +12,20 @@ function showMods() {
 }
 
 function startProcess() {
-    fetch('/control/start')
+    fetch('/control/servercmd/start')
         .then(response => response.text())
-        .then(data => alert(data))
+        .then(data => {
+            document.getElementById('serverCmd').innerHTML += data;
+        })
         .catch(error => console.error('Error:', error));
 }
 
 function stopProcess() {
-    fetch('/control/stop')
+    fetch('/control/servercmd/stop')
         .then(response => response.text())
-        .then(data => alert(data))
+        .then(data => {
+            document.getElementById('serverCmd').innerHTML += data;
+        })
         .catch(error => console.error('Error:', error));
 }
 
