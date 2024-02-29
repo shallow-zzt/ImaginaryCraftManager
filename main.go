@@ -10,12 +10,13 @@ import (
 )
 
 var manager *serverCmd.CommandManager
+var serverRunning bool
 
 func main() {
 	// 设置路由
 	var err error
+	serverRunning = false
 	if err != nil {
-		fmt.Println("cmd管道创建失败:", err)
 		return
 	}
 
@@ -23,15 +24,28 @@ func main() {
 		ShowMods(w, r)
 	})
 	http.HandleFunc("/control/servercmd/start", func(w http.ResponseWriter, r *http.Request) {
-		manager, err = serverCmd.NewCmdManager("fabric-server")
-		StartCmd(w, r, manager)
+		if !serverRunning {
+			manager, err = serverCmd.NewCmdManager("fabric-server")
+			serverRunning = true
+			StartCmd(w, r, manager)
+
+		} else {
+			fmt.Println("进程已启动")
+		}
+
 	})
 	http.HandleFunc("/control/servercmd/stop", func(w http.ResponseWriter, r *http.Request) {
-		if manager == nil {
-			fmt.Println("Manager 未初始化")
-			return
+		if serverRunning {
+			// if manager == nil {
+			// 	fmt.Println("Manager 未初始化")
+			// 	return
+			// }
+			serverRunning = false
+			StopCmd(w, r, manager)
+		} else {
+			fmt.Println("进程未启动")
 		}
-		StopCmd(w, r, manager)
+
 	})
 
 	http.Handle("/", http.FileServer(http.Dir("static")))
@@ -76,7 +90,6 @@ func StopCmd(w http.ResponseWriter, r *http.Request, cm *serverCmd.CommandManage
 
 	err := serverCmd.CloseProcessAndPipe(cm)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

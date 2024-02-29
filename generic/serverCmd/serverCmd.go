@@ -26,17 +26,17 @@ func NewCmdManager(serverDir string) (*CommandManager, error) {
 }
 
 func CloseProcessAndPipe(cm *CommandManager) error {
-
-	if err := cm.cmd.Process.Kill(); err != nil {
-		fmt.Println("进程关闭失败:", err)
-		return err
-	}
 	//暴力关闭Java
 	//因为我也没想到更好的办法
 	//我不清楚这样做，会不会把所有需要java运行的程序都关了 ^_^
 
 	//经过测试，至少客户端和服务端同时启动时，不会关闭客户端 ^_^
 	exec.Command("taskkill", "/f", "/im", "java.exe").Run()
+	if err := cm.cmd.Process.Kill(); err != nil {
+		fmt.Println("进程关闭失败:", err)
+		return err
+	}
+
 	return nil
 }
 
