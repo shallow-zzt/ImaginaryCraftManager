@@ -12,17 +12,18 @@ import (
 var manager *serverCmd.CommandManager
 
 func main() {
-
 	// 设置路由
+	var err error
+	if err != nil {
+		fmt.Println("cmd管道创建失败:", err)
+		return
+	}
+
 	http.HandleFunc("/api/mods", func(w http.ResponseWriter, r *http.Request) {
 		ShowMods(w, r)
 	})
 	http.HandleFunc("/control/servercmd/start", func(w http.ResponseWriter, r *http.Request) {
-		manager, err := serverCmd.NewCmdManager("fabric-server")
-		if err != nil {
-			fmt.Println("cmd管道创建失败:", err)
-			return
-		}
+		manager, err = serverCmd.NewCmdManager("fabric-server")
 		StartCmd(w, r, manager)
 	})
 	http.HandleFunc("/control/servercmd/stop", func(w http.ResponseWriter, r *http.Request) {
