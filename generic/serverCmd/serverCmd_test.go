@@ -6,6 +6,13 @@ import (
 	"time"
 )
 
+func TestServerSetMemory(t *testing.T) {
+	err := SetCmdParameter("..\\..\\fabric-server", "3")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+}
 func TestServerCmd(t *testing.T) {
 	manager, err := NewCmdManager("..\\..\\fabric-server")
 	if err != nil {

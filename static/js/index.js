@@ -29,4 +29,13 @@ function stopProcess() {
         .catch(error => console.error('Error:', error));
 }
 
+function restartProcess() {
+    fetch('/control/servercmd/restart')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('serverCmd').innerHTML += data;
+        })
+        .catch(error => console.error('Error:', error));
+}
+
 showMods();

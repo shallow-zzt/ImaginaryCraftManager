@@ -3,12 +3,32 @@ package serverCmd
 import (
 	"bufio"
 	"fmt"
+	"os"
 	"os/exec"
 )
 
 type CommandManager struct {
 	cmd    *exec.Cmd
 	stdout *bufio.Scanner
+}
+
+func SetCmdParameter(serverDir string, serverMemory string) error {
+	serverRunCommand := "java -Xmx" + serverMemory + "G -jar fabric-server-launch.jar nogui"
+	cmdFileName := serverDir + "\\start.bat"
+
+	file, err := os.Create(cmdFileName)
+	if err != nil {
+		fmt.Println("cmd运行脚本创建失败:", err)
+		return err
+	}
+	defer file.Close()
+
+	_, err = file.WriteString(serverRunCommand)
+	if err != nil {
+		fmt.Println("Error writing to file:", err)
+		return err
+	}
+	return nil
 }
 
 func NewCmdManager(serverDir string) (*CommandManager, error) {
