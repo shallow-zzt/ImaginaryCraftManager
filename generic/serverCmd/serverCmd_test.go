@@ -7,7 +7,7 @@ import (
 )
 
 func TestServerSetMemory(t *testing.T) {
-	err := SetCmdParameter("..\\..\\fabric-server", "3")
+	err := SetCmdParameter("..\\..\\fabric-server", 3)
 	if err != nil {
 		fmt.Println(err)
 		return

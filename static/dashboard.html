@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imaginary Craft Manager</title>
+</head>
+<body>
+    <h1 id="fileListTitle"></h1>     
+    <div id="fileList"></div>
+    <div id="fileControl"></div>    
+    <div id="serverCmd"></div>
+    <button onclick="switchFileMode2Mods()">显示mod文件</button>
+    <button onclick="switchFileMode2ModsConfig()">显示mod配置文件</button>     
+    <button onclick="switchFileMode2None()">不显示</button>       
+    <br>
+    <button onclick="startProcess()">启动服务器</button>
+    <button onclick="stopProcess()">关闭服务器</button>     
+    <button onclick="restartProcess()">重启服务器</button>
+
+	<script src="./js/backendFunc.js"></script>               
+	<script src="./js/dashboard.js"></script>
+</body>
+</html>

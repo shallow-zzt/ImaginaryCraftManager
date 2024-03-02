@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strconv"
 )
 
 type CommandManager struct {
@@ -12,8 +13,9 @@ type CommandManager struct {
 	stdout *bufio.Scanner
 }
 
-func SetCmdParameter(serverDir string, serverMemory string) error {
-	serverRunCommand := "java -Xmx" + serverMemory + "G -jar fabric-server-launch.jar nogui"
+func SetCmdParameter(serverDir string, serverMemory int) error {
+
+	serverRunCommand := "java -Xmx" + strconv.Itoa(serverMemory) + "G -jar fabric-server-launch.jar nogui"
 	cmdFileName := serverDir + "\\start.bat"
 
 	file, err := os.Create(cmdFileName)

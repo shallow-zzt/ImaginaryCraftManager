@@ -3,15 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imaginary Craft Manager</title>
+    <title>ICM登录</title>
 </head>
 <body>
-    <h1>MOD列表</h1>     
-    <p id="modsList"></p>
-    <p id="serverCmd"></p>   
-    <button onclick="startProcess()">启动服务器</button>
-    <button onclick="stopProcess()">关闭服务器</button>     
-    <button onclick="restartProcess()">重启服务器</button>           
-	<script src="./js/index.js"></script>
+    <h2>ICM面板</h2>
+    <form id="loginForm">
+        <div>
+            <label for="username">用户名:</label>
+            <input type="text" id="username" name="username">
+        </div>
+        <div>
+            <label for="password">密码:</label>
+            <input type="password" id="password" name="password">
+        </div>
+        <button type="submit">登录</button>
+    </form>
+	<script src="./js/backendFunc.js"></script>               
+	<script src="./js/login.js"></script>    
 </body>
 </html>

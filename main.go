@@ -1,12 +1,15 @@
 package main
 
 import (
+	"ImaginaryCraftManager/auth/authStructs"
+	"ImaginaryCraftManager/auth/weblogin"
 	"ImaginaryCraftManager/generic/fileManage"
 	"ImaginaryCraftManager/generic/serverCmd"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 var manager *serverCmd.CommandManager
@@ -19,6 +22,11 @@ func main() {
 	if err != nil {
 		return
 	}
+	/* ---------------- web访问控制 ----------------*/
+	http.HandleFunc("/auth/login", func(w http.ResponseWriter, r *http.Request) {
+		//初始登陆界面
+		LoginFunc(w, r)
+	})
 
 	/* ---------------- api查询url接口 ----------------*/
 	http.HandleFunc("/api/mods", func(w http.ResponseWriter, r *http.Request) {
@@ -27,6 +35,7 @@ func main() {
 	})
 	http.HandleFunc("/api/mods/configs", func(w http.ResponseWriter, r *http.Request) {
 		//mod配置列表展示
+		ShowModsConfigs(w, r)
 	})
 	http.HandleFunc("/api/server/setting", func(w http.ResponseWriter, r *http.Request) {
 		//服务器设置查看
@@ -98,6 +107,11 @@ func main() {
 
 	})
 
+	/* ---------------- 控制台显示 ----------------*/
+	http.HandleFunc("/dashboard", func(w http.ResponseWriter, r *http.Request) {
+		Dashboard(w, r)
+	})
+
 	/* ---------------- 静态资源路径 ----------------*/
 	http.Handle("/", http.FileServer(http.Dir("static")))
 
@@ -106,7 +120,49 @@ func main() {
 	fmt.Println("running……")
 }
 
-// showMode 处理从前端发送的消息
+func Dashboard(w http.ResponseWriter, r *http.Request) {
+	if weblogin.CheckIsLogined(w, r) {
+		fmt.Println("调用成功")
+		http.ServeFile(w, r, "static/dashboard.html")
+		return
+	}
+	fmt.Println("调用失败")
+}
+
+// 登录处理函数
+func LoginFunc(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "方法不允许", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var user authStructs.User
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		http.Error(w, "非法请求体", http.StatusBadRequest)
+		return
+	}
+
+	if weblogin.CheckLogin(user.Username, user.Password) {
+		fmt.Println("登陆成功")
+		expiration := time.Now().Add(24 * time.Hour)
+		cookie := http.Cookie{
+			Name:    "session",
+			Value:   user.Username,
+			Expires: expiration,
+		}
+		http.SetCookie(w, &cookie)
+		fmt.Fprintf(w, "Cookie 的值为: %s", cookie.Value)
+		//http.Redirect(w, r, "/dashboard", http.StatusFound)
+		return
+	} else {
+		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+		//http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+
+}
+
 func ShowMods(w http.ResponseWriter, r *http.Request) {
 	// 从请求中解析JSON数据
 	type ModPath struct {
@@ -125,6 +181,26 @@ func ShowMods(w http.ResponseWriter, r *http.Request) {
 	response := ModPath{Mods: modLists}
 
 	// 将响应数据转换为JSON格式并写回到客户端
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func ShowModsConfigs(w http.ResponseWriter, r *http.Request) {
+	type ModPath struct {
+		Configs []string `json:"configs"`
+	}
+	configPath := "fabric-server/config"
+	var configLists []string
+
+	fileNames, err := fileManage.GetAllFileNames(configPath)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	configLists = append(configLists, fileNames...)
+	response := ModPath{Configs: configLists}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
