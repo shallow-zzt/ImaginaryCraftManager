@@ -8,7 +8,9 @@ function authLogin(formData){
     })
     .then(response => {
         if (!response.ok) {
-            alert("登陆失败")
+            alert("登陆失败");
+        } else{
+            window.location.href = "/dashboard";
         }
         return response.text();
     })

@@ -112,6 +112,11 @@ func main() {
 		Dashboard(w, r)
 	})
 
+	/* ---------------- 中间件 ----------------*/
+	http.HandleFunc("/redirect/2/dashboard", func(w http.ResponseWriter, r *http.Request) {
+		RedirectHandler(w, r)
+	})
+
 	/* ---------------- 静态资源路径 ----------------*/
 	http.Handle("/", http.FileServer(http.Dir("static")))
 
@@ -120,13 +125,18 @@ func main() {
 	fmt.Println("running……")
 }
 
+func RedirectHandler(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/dashboard", http.StatusFound)
+}
+
 func Dashboard(w http.ResponseWriter, r *http.Request) {
-	if weblogin.CheckIsLogined(w, r) {
-		fmt.Println("调用成功")
-		http.ServeFile(w, r, "static/dashboard.html")
+	if !weblogin.CheckIsLogined(r) {
+		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
-	fmt.Println("调用失败")
+
+	fmt.Println("调用成功")
+	http.ServeFile(w, r, "static/dashboard.html")
 }
 
 // 登录处理函数
@@ -146,20 +156,17 @@ func LoginFunc(w http.ResponseWriter, r *http.Request) {
 	if weblogin.CheckLogin(user.Username, user.Password) {
 		fmt.Println("登陆成功")
 		expiration := time.Now().Add(24 * time.Hour)
-		cookie := http.Cookie{
+		cookie := &http.Cookie{
 			Name:    "session",
 			Value:   user.Username,
 			Expires: expiration,
+			Path:    "/",
 		}
-		http.SetCookie(w, &cookie)
-		fmt.Fprintf(w, "Cookie 的值为: %s", cookie.Value)
-		//http.Redirect(w, r, "/dashboard", http.StatusFound)
-		return
-	} else {
-		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
-		//http.Redirect(w, r, "/", http.StatusFound)
+		http.SetCookie(w, cookie)
 		return
 	}
+	http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+	http.Redirect(w, r, "/", http.StatusFound)
 
 }
 

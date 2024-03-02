@@ -14,8 +14,9 @@ func CheckLogin(storedUser string, storedPassword string) bool {
 }
 
 // 检查用户是否已经登录的中间件
-func CheckIsLogined(w http.ResponseWriter, r *http.Request) bool {
+func CheckIsLogined(r *http.Request) bool {
 	cookie, err := r.Cookie("session")
+	//fmt.Println(r.Cookies())
 	if err != nil || cookie.Value == "" || users[cookie.Value] == "" {
 		return false
 	}
