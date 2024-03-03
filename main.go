@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -22,6 +24,7 @@ func main() {
 	if err != nil {
 		return
 	}
+
 	/* ---------------- web访问控制 ----------------*/
 	http.HandleFunc("/auth/login", func(w http.ResponseWriter, r *http.Request) {
 		//初始登陆界面
@@ -154,10 +157,18 @@ func main() {
 
 	/* ---------------- 控制台显示 ----------------*/
 	http.HandleFunc("/dashboard", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.URL.Path)
+		if strings.HasSuffix(r.URL.Path, "/dashboard.html") {
+			http.NotFound(w, r)
+			return
+		}
 		if RedirectHandler(w, r) {
 			return
 		}
 		Dashboard(w, r)
+	})
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		LoginPage(w, r)
 	})
 
 	/* ---------------- 中间件 ----------------*/
@@ -166,11 +177,22 @@ func main() {
 	})
 
 	/* ---------------- 静态资源路径 ----------------*/
-	http.Handle("/", http.FileServer(http.Dir("static")))
+	http.HandleFunc("/js/backendFunc.js", ServeJavaScriptFile("backendFunc.js"))
+	http.HandleFunc("/js/login.js", ServeJavaScriptFile("login.js"))
+	http.HandleFunc("/js/dashboard.js", ServeJavaScriptFile("dashboard.js"))
+	//fs := http.FileServer(http.Dir("/static/"))
+	//http.Handle("/prefix/static", http.StripPrefix("/prefix/static", fs))
 
 	// 启动Web服务器
 	http.ListenAndServe(":8080", nil)
 	fmt.Println("running……")
+}
+
+func ServeJavaScriptFile(filename string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/javascript")
+		http.ServeFile(w, r, filepath.Join("static/js", filename))
+	}
 }
 
 func RedirectHandler(w http.ResponseWriter, r *http.Request) bool {
@@ -179,6 +201,10 @@ func RedirectHandler(w http.ResponseWriter, r *http.Request) bool {
 		return true
 	}
 	return false
+}
+
+func LoginPage(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "static/index.html")
 }
 
 func Dashboard(w http.ResponseWriter, r *http.Request) {

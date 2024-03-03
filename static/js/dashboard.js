@@ -27,5 +27,6 @@ function switchFileMode2Mods(){
 function switchFileMode2None(){
     document.getElementById('fileListTitle').innerHTML = ``;  
     document.getElementById('fileList').innerHTML = ``;      
+    document.getElementById('fileControl').innerHTML = ``;
     showFileMode = 'none'
 }
