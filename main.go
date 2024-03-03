@@ -30,50 +30,89 @@ func main() {
 
 	/* ---------------- api查询url接口 ----------------*/
 	http.HandleFunc("/api/mods", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		//mod列表展示
 		ShowMods(w, r)
 	})
 	http.HandleFunc("/api/mods/configs", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		//mod配置列表展示
 		ShowModsConfigs(w, r)
 	})
 	http.HandleFunc("/api/server/setting", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		//服务器设置查看
 	})
 	http.HandleFunc("/api/server/status", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		//服务器状态查看
 	})
 
 	/* ---------------- 设置修改url接口 ----------------*/
 	http.HandleFunc("/setting/modify/servercmd/gamerule", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		//服务器游戏设置修改
 	})
 	http.HandleFunc("/setting/modify/servercmd/running", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		//服务器启动设置
 	})
 
 	/* ---------------- 文件控制url接口 ----------------*/
 	http.HandleFunc("/file/mods/upload", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		//服务器mod上传
 	})
 	http.HandleFunc("/file/mods/download", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		//服务器mod下载
 	})
 	http.HandleFunc("/file/mods/delete", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		//服务器mod删除
 	})
 	http.HandleFunc("/file/mods/config/upload", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		//服务器mod配置上传
 	})
 	http.HandleFunc("/file/mods/config/download", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		//服务器mod配置下载
 	})
 	http.HandleFunc("/file/mods/config/delete", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		//服务器mod配置删除
 	})
 
 	/* ---------------- 服务器控制url接口 ----------------*/
 	http.HandleFunc("/control/servercmd/start", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		//启动服务器
 		if !serverRunning {
 			manager, err = serverCmd.NewCmdManager("fabric-server")
@@ -86,6 +125,9 @@ func main() {
 
 	})
 	http.HandleFunc("/control/servercmd/restart", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		//重启服务器
 		if serverRunning {
 			StopCmd(w, r, manager)
@@ -97,6 +139,9 @@ func main() {
 
 	})
 	http.HandleFunc("/control/servercmd/stop", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		//关闭服务器
 		if serverRunning {
 			serverRunning = false
@@ -109,6 +154,9 @@ func main() {
 
 	/* ---------------- 控制台显示 ----------------*/
 	http.HandleFunc("/dashboard", func(w http.ResponseWriter, r *http.Request) {
+		if RedirectHandler(w, r) {
+			return
+		}
 		Dashboard(w, r)
 	})
 
@@ -125,16 +173,15 @@ func main() {
 	fmt.Println("running……")
 }
 
-func RedirectHandler(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/dashboard", http.StatusFound)
+func RedirectHandler(w http.ResponseWriter, r *http.Request) bool {
+	if !weblogin.CheckIsLogined(r) {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return true
+	}
+	return false
 }
 
 func Dashboard(w http.ResponseWriter, r *http.Request) {
-	if !weblogin.CheckIsLogined(r) {
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
-	}
-
 	fmt.Println("调用成功")
 	http.ServeFile(w, r, "static/dashboard.html")
 }
@@ -163,10 +210,11 @@ func LoginFunc(w http.ResponseWriter, r *http.Request) {
 			Path:    "/",
 		}
 		http.SetCookie(w, cookie)
+		//http.Redirect(w, r, "/dashboard", http.StatusFound)
 		return
 	}
-	http.Error(w, "Invalid username or password", http.StatusUnauthorized)
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Error(w, "账号或者密码错误", http.StatusUnauthorized)
+	//http.Redirect(w, r, "/", http.StatusFound)
 
 }
 

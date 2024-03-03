@@ -8,14 +8,16 @@ function authLogin(formData){
     })
     .then(response => {
         if (!response.ok) {
-            alert("登陆失败");
-        } else{
-            window.location.href = "/dashboard";
+            document.getElementById("loginResult").innerHTML = `登陆失败，账号或密码错误……`
+            return response.text()
+        } else {
+            window.location.href = "/dashboard"
+            document.getElementById("loginResult").innerHTML = `登陆成功，<a href='/dashboard'>点击此处跳转</a>`
+            return response.text()
         }
-        return response.text();
     })
     .then(data => {
-        location.reload();
+       // location.reload();
     })
     .catch(error => {
         alert(error.message);
