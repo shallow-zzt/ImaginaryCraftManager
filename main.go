@@ -1,16 +1,16 @@
 package main
 
 import (
-	"ImaginaryCraftManager/auth/authStructs"
 	"ImaginaryCraftManager/auth/weblogin"
 	"ImaginaryCraftManager/generic/fileManage"
 	"ImaginaryCraftManager/generic/serverCmd"
+	"ImaginaryCraftManager/jsonStructs/requestStructs/authStructs"
+	"ImaginaryCraftManager/jsonStructs/responseStructs/pathStructs"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
-	"strings"
 	"time"
 )
 
@@ -24,11 +24,25 @@ func main() {
 	if err != nil {
 		return
 	}
-
+	weblogin.LoadUsers("authorities.ini")
 	/* ---------------- web访问控制 ----------------*/
 	http.HandleFunc("/auth/login", func(w http.ResponseWriter, r *http.Request) {
 		//初始登陆界面
 		LoginFunc(w, r)
+	})
+	http.HandleFunc("/auth/logout", func(w http.ResponseWriter, r *http.Request) {
+		//登出账号
+		if RedirectHandler(w, r) {
+			return
+		}
+		Logoutfunc(w, r)
+	})
+	http.HandleFunc("/auth/logout/refresh", func(w http.ResponseWriter, r *http.Request) {
+		//刷新账号信息并登出
+		if RedirectHandler(w, r) {
+			return
+		}
+		RefreshLogin(w, r)
 	})
 
 	/* ---------------- api查询url接口 ----------------*/
@@ -158,10 +172,6 @@ func main() {
 	/* ---------------- 控制台显示 ----------------*/
 	http.HandleFunc("/dashboard", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.URL.Path)
-		if strings.HasSuffix(r.URL.Path, "/dashboard.html") {
-			http.NotFound(w, r)
-			return
-		}
 		if RedirectHandler(w, r) {
 			return
 		}
@@ -180,8 +190,6 @@ func main() {
 	http.HandleFunc("/js/backendFunc.js", ServeJavaScriptFile("backendFunc.js"))
 	http.HandleFunc("/js/login.js", ServeJavaScriptFile("login.js"))
 	http.HandleFunc("/js/dashboard.js", ServeJavaScriptFile("dashboard.js"))
-	//fs := http.FileServer(http.Dir("/static/"))
-	//http.Handle("/prefix/static", http.StripPrefix("/prefix/static", fs))
 
 	// 启动Web服务器
 	http.ListenAndServe(":8080", nil)
@@ -212,7 +220,6 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "static/dashboard.html")
 }
 
-// 登录处理函数
 func LoginFunc(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "方法不允许", http.StatusMethodNotAllowed)
@@ -236,19 +243,37 @@ func LoginFunc(w http.ResponseWriter, r *http.Request) {
 			Path:    "/",
 		}
 		http.SetCookie(w, cookie)
-		//http.Redirect(w, r, "/dashboard", http.StatusFound)
 		return
 	}
 	http.Error(w, "账号或者密码错误", http.StatusUnauthorized)
-	//http.Redirect(w, r, "/", http.StatusFound)
+}
 
+func RefreshLogin(w http.ResponseWriter, r *http.Request) {
+
+	cookie := &http.Cookie{
+		Name:    "session",
+		Value:   "",
+		Expires: time.Unix(1, 0),
+		MaxAge:  -1,
+		Path:    "/",
+	}
+	http.SetCookie(w, cookie)
+	weblogin.RefreshUsers("authorities.ini")
+	weblogin.LoadUsers("authorities.ini")
+}
+
+func Logoutfunc(w http.ResponseWriter, r *http.Request) {
+	cookie := &http.Cookie{
+		Name:    "session",
+		Value:   "",
+		Expires: time.Unix(1, 0),
+		MaxAge:  -1,
+		Path:    "/",
+	}
+	http.SetCookie(w, cookie)
 }
 
 func ShowMods(w http.ResponseWriter, r *http.Request) {
-	// 从请求中解析JSON数据
-	type ModPath struct {
-		Mods []string `json:"mods"`
-	}
 	modPath := "fabric-server/mods"
 	var modLists []string
 
@@ -259,17 +284,13 @@ func ShowMods(w http.ResponseWriter, r *http.Request) {
 	}
 
 	modLists = append(modLists, fileNames...)
-	response := ModPath{Mods: modLists}
 
-	// 将响应数据转换为JSON格式并写回到客户端
+	response := pathStructs.ModPath{Mods: modLists}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
 
 func ShowModsConfigs(w http.ResponseWriter, r *http.Request) {
-	type ModPath struct {
-		Configs []string `json:"configs"`
-	}
 	configPath := "fabric-server/config"
 	var configLists []string
 
@@ -280,8 +301,8 @@ func ShowModsConfigs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	configLists = append(configLists, fileNames...)
-	response := ModPath{Configs: configLists}
 
+	response := pathStructs.ModConfigPath{Configs: configLists}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }

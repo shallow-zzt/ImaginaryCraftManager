@@ -74,3 +74,16 @@ function restartProcess() {
         })
         .catch(error => console.error('Error:', error));
 }
+
+function logoutFunc() {
+    fetch('/auth/logout')
+    .then(response => location.reload())
+        .catch(error => console.error('Error:', error));
+
+}
+
+function refreshFunc() {
+    fetch('/auth/logout/refresh')
+    .then(response => location.reload())
+        .catch(error => console.error('Error:', error));
+}

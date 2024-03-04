@@ -1,12 +1,51 @@
 package weblogin
 
 import (
+	"fmt"
 	"net/http"
+	"os"
+
+	"github.com/go-ini/ini"
 )
 
-var users = map[string]string{
-	"user1": "password1",
-	"user2": "password2",
+var users = map[string]string{}
+
+func RefreshUsers(filePath string) {
+	os.Remove(filePath)
+	GenLoginToken(filePath)
+}
+
+func GetUsername(filePath string) string {
+	var username string
+	for key := range users {
+		username = key
+	}
+	return username
+}
+
+func LoadUsers(filePath string) {
+	cfg, err := ini.Load(filePath)
+	if err != nil {
+		fmt.Println("无ini文件，生成中……")
+		GenLoginToken(filePath)
+		LoadUsers(filePath)
+		return
+	}
+
+	section := cfg.Section("User")
+	if section == nil {
+		fmt.Println("section读取失败，ini重新生成中……")
+		os.Remove(filePath)
+		GenLoginToken(filePath)
+		LoadUsers(filePath)
+		return
+	}
+
+	users = make(map[string]string)
+	username := section.Key("Username").String()
+	password := section.Key("Password").String()
+	users[username] = password
+	fmt.Println(users)
 }
 
 func CheckLogin(storedUser string, storedPassword string) bool {
