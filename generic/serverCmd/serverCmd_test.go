@@ -2,6 +2,7 @@ package serverCmd
 
 import (
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 )
@@ -13,7 +14,8 @@ func TestServerSetMemory(t *testing.T) {
 		return
 	}
 }
-func TestServerCmd(t *testing.T) {
+
+func TestServerCmd(t *testing.T, w http.ResponseWriter, r *http.Request) {
 	manager, err := NewCmdManager("..\\..\\fabric-server")
 	if err != nil {
 		fmt.Println("cmd管道创建失败:", err)
@@ -21,7 +23,7 @@ func TestServerCmd(t *testing.T) {
 	}
 
 	//两次启动进程测试
-	javaPid, err := CmdRecording(manager)
+	javaPid, err := CmdRecording(w, r, manager)
 	fmt.Println(javaPid)
 	if err != nil {
 		return
@@ -43,7 +45,7 @@ func TestServerCmd(t *testing.T) {
 		return
 	}
 
-	javaPid, err = CmdRecording(manager)
+	javaPid, err = CmdRecording(w, r, manager)
 	fmt.Println(javaPid)
 	if err != nil {
 		return

@@ -17,9 +17,13 @@
     <button onclick="stopProcess()">关闭服务器</button>     
     <button onclick="restartProcess()">重启服务器</button>
     <br>
+    <button onclick="startWebSocket()">开启cmd监控</button>     
+    <br>
     <button onclick="logoutFunc()">登出账号</button>
     <button onclick="refreshFunc()">重置账号</button>       
+    <div id="output"></div>    
 	<script src="./js/backendFunc.js"></script>               
 	<script src="./js/dashboard.js"></script>
+	<script src="./js/websocket.js"></script>    
 </body>
 </html>

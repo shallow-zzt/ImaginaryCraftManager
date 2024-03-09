@@ -169,6 +169,20 @@ func main() {
 
 	})
 
+	/* ---------------- websocket ----------------*/
+	http.HandleFunc("/ws/servercmd/status", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(r.URL.Path)
+		if RedirectHandler(w, r) {
+			return
+		}
+		if serverRunning {
+			ShowCmd(w, r, manager)
+		} else {
+			fmt.Println("进程未启动")
+		}
+
+	})
+
 	/* ---------------- 控制台显示 ----------------*/
 	http.HandleFunc("/dashboard", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.URL.Path)
@@ -178,6 +192,10 @@ func main() {
 		Dashboard(w, r)
 	})
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if weblogin.CheckIsLogined(r) {
+			http.Redirect(w, r, "/dashboard", http.StatusFound)
+			return
+		}
 		LoginPage(w, r)
 	})
 
@@ -190,6 +208,7 @@ func main() {
 	http.HandleFunc("/js/backendFunc.js", ServeJavaScriptFile("backendFunc.js"))
 	http.HandleFunc("/js/login.js", ServeJavaScriptFile("login.js"))
 	http.HandleFunc("/js/dashboard.js", ServeJavaScriptFile("dashboard.js"))
+	http.HandleFunc("/js/websocket.js", ServeJavaScriptFile("websocket.js"))
 
 	// 启动Web服务器
 	http.ListenAndServe(":8080", nil)
@@ -308,11 +327,15 @@ func ShowModsConfigs(w http.ResponseWriter, r *http.Request) {
 }
 
 func StartCmd(w http.ResponseWriter, r *http.Request, cm *serverCmd.CommandManager) {
-	javaPid, err := serverCmd.CmdRecording(cm)
+	javaPid, err := serverCmd.CmdRecording(w, r, cm)
 	fmt.Println(javaPid)
 	if err != nil {
 		return
 	}
+}
+
+func ShowCmd(w http.ResponseWriter, r *http.Request, cm *serverCmd.CommandManager) {
+	serverCmd.CmdSocket(w, r, cm)
 }
 
 func StopCmd(w http.ResponseWriter, r *http.Request, cm *serverCmd.CommandManager) {

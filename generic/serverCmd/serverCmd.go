@@ -3,14 +3,22 @@ package serverCmd
 import (
 	"bufio"
 	"fmt"
+	"net/http"
 	"os"
 	"os/exec"
 	"strconv"
+
+	"github.com/gorilla/websocket"
 )
 
 type CommandManager struct {
 	cmd    *exec.Cmd
 	stdout *bufio.Scanner
+}
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
 }
 
 func SetCmdParameter(serverDir string, serverMemory int) error {
@@ -62,23 +70,37 @@ func CloseProcessAndPipe(cm *CommandManager) error {
 	return nil
 }
 
-func CmdRecording(cm *CommandManager) (javaPID int, err error) {
-	var outputLines []string
+func CmdRecording(w http.ResponseWriter, r *http.Request, cm *CommandManager) (javaPID int, err error) {
 
 	if err := cm.cmd.Start(); err != nil {
 		fmt.Println("服务器启动失败:", err)
 		return 0, err
 	}
 
-	go func() {
-		for cm.stdout.Scan() {
-			outputLines = append(outputLines, cm.stdout.Text())
-			fmt.Println(cm.stdout.Text())
-		}
-	}()
-
 	javaPID = cm.cmd.Process.Pid
 	fmt.Println(javaPID)
 
 	return javaPID, nil
+}
+
+func CmdSocket(w http.ResponseWriter, r *http.Request, cm *CommandManager) {
+	// var outputLines []string
+	var output string
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer conn.Close()
+
+	go func() {
+		for cm.stdout.Scan() {
+			output = cm.stdout.Text()
+			fmt.Println(output) // 将命令行输出打印到控制台
+			err := conn.WriteMessage(websocket.TextMessage, []byte(output))
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+	}()
 }

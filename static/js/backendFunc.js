@@ -50,10 +50,7 @@ function showModConfigs() {
 
 function startProcess() {
     fetch('/control/servercmd/start')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('serverCmd').innerHTML += data;
-        })
+        .then(response => startWebSocket())
         .catch(error => console.error('Error:', error));
 }
 
