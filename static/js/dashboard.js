@@ -35,11 +35,9 @@ function switchFileMode2None(){
 }
 
 function showCmdOutput(){
-    //cmdOutput.style.display = "block";
     startWebSocket();
 }
 
 function clearCmdOutput(){
     document.getElementById('cmdOutput').innerHTML= ``;
-    //cmdOutput.style.display = "none";
 }

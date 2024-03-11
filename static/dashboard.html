@@ -6,9 +6,223 @@
     <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
+    <div id="serverGeneralSettingTitle">通用设置</div>
+    <div id="serverGeneralSetting">
+        <form id="serverGeneralSettingForm">
+            <div>
+                <label for="motd">服务器标题</label>
+                <input type="text" id="motd" name="motd">
+                <br>           
+                <label for="max-players">最大玩家数</label>
+                <input type="text" id="max-players" name="max-players">   
+                <br>
+                <label for="gamemode">服务器默认游戏模式</label>
+                <select id="gamemode" name="gamemode">
+                    <option value="survival">生存模式</option>
+                    <option value="creative">创造模式</option>
+                    <option value="adventure">冒险模式</option>
+                    <option value="spectator">旁观者模式</option>
+                </select>
+                <label for="difficulty">游戏难度</label>
+                <select id="difficulty" name="difficulty">
+                    <option value="peaceful">和平</option>
+                    <option value="easy">简单</option>
+                    <option value="normal">普通</option>
+                    <option value="hard">困难</option>
+                </select> 
+                <br>
+                <label for="online-mode">正版验证</label>
+                <select id="online-mode" name="online-mode">
+                    <option value="true">开</option>
+                    <option value="false">关</option>
+                </select>
+                <label for="pvp">启用pvp</label>
+                <select id="pvp" name="pvp">
+                    <option value="true">开</option>
+                    <option value="false">关</option>
+                </select>      
+                <label for="generate-structures">启用结构生成</label>
+                <select id="generate-structures" name="generate-structures">
+                    <option value="true">开</option>
+                    <option value="false">关</option>
+                </select>                                              
+                <label for="level-type">游戏难度</label>
+                <select id="level-type" name="level-type">
+                    <option value="peaceful">和平</option>
+                    <option value="easy">简单</option>
+                    <option value="normal">普通</option>
+                    <option value="hard">困难</option>
+                </select>                      
+            </div>
+            <button type="submit">提交更改</button>
+        </form>
+    </div>
+    <div id="serverWorldSettingTitle">世界生成设置</div>
+    <div id="serverWorldSetting">
+        <form id="serverWorldSettingForm">
+            <div>                           
+                <label for="level-seed">地图种子号(留空随机)</label>
+                <input type="text" id="level-seed" name="level-seed">
+                <br>
+                <label for="max-world-size">地图生成大小</label>
+                <input type="text" id="max-world-size" name="max-world-size">
+                <br>
+                <label for="level-type">地图类型</label>
+                <select id="level-type" name="level-type">
+                    <option value="default">默认</option>
+                    <option value="flat">超平坦</option>
+                    <option value="large biomes">巨型生物群系</option>
+                    <option value="amplified">放大化</option>
+                </select>
+                <label for="allow-nether">启用下界</label>
+                <select id="allow-nether" name="allow-nether">
+                    <option value="true">开</option>
+                    <option value="false">关</option>
+                </select>
+                <br>
+                <label for="generator-settings">额外生成设置</label>
+                <input type="text" id="generator-settings" name="generator-settings">
+            </div>
+            <button type="submit">提交更改</button>
+        </form>
+    </div>
+    <div id="serverNetworkingSettingTitle">网络性能设置</div>
+    <div id="serverNetworkingSetting">
+        <form id="serverNetworkingSettingForm">
+            <div>                           
+                <label for="server-ip">服务器ip(留空默认本机ip)</label>
+                <input type="text" id="server-ip" name="server-ip">
+                <label for="server-port">服务器端口号</label>
+                <input type="text" id="server-port" name="server-port">
+                <br>
+                <label for="server-memory">服务器启动内存</label>
+                <input type="text" id="server-memory" name="server-memory">          
+                <br>                
+                <label for="view-distance">视野限制</label>
+                <input type="text" id="view-distance" name="view-distance">
+                <label for="simulation-distance">模拟距离限制</label>
+                <input type="text" id="simulation-distance" name="simulation-distance">
+                <br>       
+                <label for="network-compression-threshold">网络压缩阙值</label>
+                <input type="text" id="network-compression-threshold" name="network-compression-threshold">
+                <label for="max-tick-time">最大tick时间</label>
+                <input type="text" id="max-tick-time" name="max-tick-time">                
+                <br>                                                                 
+                <label for="use-native-transport">启用本地运输</label>
+                <select id="use-native-transport" name="use-native-transport">
+                    <option value="true">开</option>
+                    <option value="false">关</option>
+                </select>
+            </div>
+            <button type="submit">提交更改</button>
+        </form>
+    </div>
+    <div id="serverPlayerSettingTitle">玩家管理设置</div>
+    <div id="serverPlayerSetting">
+        <form id="serverPlayerSettingForm">                                                                                 
+            <div>
+                <label for="white-list">启用白名单</label>
+                <select id="white-list" name="white-list">
+                    <option value="true">开</option>
+                    <option value="false">关</option>
+                </select>                                                                                  
+                <label for="enforce-whitelist">启用白名单增强</label>
+                <select id="enforce-whitelist" name="enforce-whitelist">
+                    <option value="true">开</option>
+                    <option value="false">关</option>
+                </select>           
+                <br>
+                <label for="spawn-protection">出生点限制破坏范围</label>
+                <input type="text" id="spawn-protection" name="spawn-protection">
+                <br>
+                <label for="op-permission-level">op权限等级</label>
+                <input type="text" id="op-permission-level" name="op-permission-level">
+
+            </div>
+            <button type="submit">提交更改</button>
+        </form>
+    </div>
+    <div id="serverResourcesPackSettingTitle">资源包设置</div>
+    <div id="serverResourcesPackSetting">
+        <form id="serverResourcesPackSettingForm">                                                                                 
+            <div>
+                <label for="require-resource-pack">强制使用指定资源包</label>
+                <select id="require-resource-pack" name="require-resource-pack">
+                    <option value="true">开</option>
+                    <option value="false">关</option>
+                </select>                                                                                  
+                <br>
+                <label for="resource-pack">使用的资源包url</label>
+                <input type="text" id="resource-pack" name="resource-pack">
+                <br>
+                <label for="resource-pack-prompt">资源包下载提示语</label>
+                <input type="text" id="resource-pack-prompt" name="resource-pack-prompt">
+
+            </div>
+            <button type="submit">提交更改</button>
+        </form>
+    </div>
+    <div id="serverAdditionalSettingTitle">其他设置</div>
+    <div id="serverAdditionalSetting">
+        <form id="serverAdditionalSettingForm">                                                                                 
+            <div>
+                <label for="allow-flight">允许飞行</label>
+                <select id="allow-flight" name="allow-flight">
+                    <option value="true">开</option>
+                    <option value="false">关</option>
+                </select>       
+                <label for="enable-command-block">启用命令方块</label>
+                <select id="enable-command-block" name="enable-command-block">
+                    <option value="true">开</option>
+                    <option value="false">关</option>
+                </select>      
+                <br>       
+                <label for="enable-query">启用外部调用</label>
+                <select id="enable-query" name="enable-query">
+                    <option value="true">开</option>
+                    <option value="false">关</option>
+                </select>           
+                <label for="enable-rcon">启用远程控制rcon</label>
+                <select id="enable-rcon" name="enable-rcon">
+                    <option value="true">开</option>
+                    <option value="false">关</option>
+                </select>                                                             
+                <br>                                                                    
+                <label for="sync-chunk-writes">区块同步写入</label>
+                <select id="sync-chunk-writes" name="sync-chunk-writes">
+                    <option value="true">开</option>
+                    <option value="false">关</option>
+                </select>           
+                <label for="log-ips">控制台显示玩家ip</label>
+                <select id="log-ips" name="log-ips">
+                    <option value="true">开</option>
+                    <option value="false">关</option>
+                </select>                            
+                <br>
+                <label for="function-permission-level">使用function函数的许可等级</label>
+                <input type="text" id="function-permission-level" name="function-permission-level">
+                <br>
+                <label for="text-filtering-config">聊天过滤配置</label>
+                <input type="text" id="text-filtering-config" name="text-filtering-config">                
+                <br>                                                                    
+                <label for="enforce-secure-profile">正版验证用户安全</label>
+                <select id="enforce-secure-profile" name="enforce-secure-profile">
+                    <option value="true">开</option>
+                    <option value="false">关</option>
+                </select>  
+            </div>
+
+            <button type="submit">提交更改</button>
+        </form>
+    </div>
+
     <h1 id="fileListTitle"></h1>     
-    <div id="fileList"></div>
-    <div id="fileControl"></div>    
+    <div class="cmd-scrollable" id="cmdFrame">
+        <div class="cmd-scrollable-content" id="fileList">
+
+        </div>
+    </div>    
+    <div id="fileControl"></div>        
     <button onclick="switchFileMode2Mods()">显示mod文件</button>
     <button onclick="switchFileMode2ModsConfig()">显示mod配置文件</button>     
     <button onclick="switchFileMode2None()">不显示</button>       

@@ -67,6 +67,7 @@ func CloseProcessAndPipe(cm *CommandManager) error {
 		exec.Command("taskkill", "/f", "/im", "java.exe").Run()
 		return err
 	}
+	fmt.Println("关闭成功")
 	exec.Command("taskkill", "/f", "/im", "java.exe").Run()
 
 	return nil
