@@ -50,24 +50,21 @@ function showModConfigs() {
 
 function startProcess() {
     fetch('/control/servercmd/start')
-        .then(response => startWebSocket())
+        .then(response => showCmdOutput())
         .catch(error => console.error('Error:', error));
 }
 
 function stopProcess() {
     fetch('/control/servercmd/stop')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('serverCmd').innerHTML += data;
-        })
+        .then(response => clearCmdOutput())
         .catch(error => console.error('Error:', error));
 }
 
 function restartProcess() {
     fetch('/control/servercmd/restart')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('serverCmd').innerHTML += data;
+        .then(response => {
+            clearCmdOutput();
+            startProcess();
         })
         .catch(error => console.error('Error:', error));
 }

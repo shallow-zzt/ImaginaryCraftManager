@@ -24,6 +24,7 @@ func main() {
 	if err != nil {
 		return
 	}
+	//taskKillProtect.InterruptFunction(manager)
 	weblogin.LoadUsers("authorities.ini")
 	/* ---------------- web访问控制 ----------------*/
 	http.HandleFunc("/auth/login", func(w http.ResponseWriter, r *http.Request) {
@@ -32,14 +33,14 @@ func main() {
 	})
 	http.HandleFunc("/auth/logout", func(w http.ResponseWriter, r *http.Request) {
 		//登出账号
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		Logoutfunc(w, r)
 	})
 	http.HandleFunc("/auth/logout/refresh", func(w http.ResponseWriter, r *http.Request) {
 		//刷新账号信息并登出
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		RefreshLogin(w, r)
@@ -47,27 +48,27 @@ func main() {
 
 	/* ---------------- api查询url接口 ----------------*/
 	http.HandleFunc("/api/mods", func(w http.ResponseWriter, r *http.Request) {
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		//mod列表展示
 		ShowMods(w, r)
 	})
 	http.HandleFunc("/api/mods/configs", func(w http.ResponseWriter, r *http.Request) {
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		//mod配置列表展示
 		ShowModsConfigs(w, r)
 	})
 	http.HandleFunc("/api/server/setting", func(w http.ResponseWriter, r *http.Request) {
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		//服务器设置查看
 	})
 	http.HandleFunc("/api/server/status", func(w http.ResponseWriter, r *http.Request) {
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		//服务器状态查看
@@ -75,13 +76,13 @@ func main() {
 
 	/* ---------------- 设置修改url接口 ----------------*/
 	http.HandleFunc("/setting/modify/servercmd/gamerule", func(w http.ResponseWriter, r *http.Request) {
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		//服务器游戏设置修改
 	})
 	http.HandleFunc("/setting/modify/servercmd/running", func(w http.ResponseWriter, r *http.Request) {
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		//服务器启动设置
@@ -89,37 +90,37 @@ func main() {
 
 	/* ---------------- 文件控制url接口 ----------------*/
 	http.HandleFunc("/file/mods/upload", func(w http.ResponseWriter, r *http.Request) {
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		//服务器mod上传
 	})
 	http.HandleFunc("/file/mods/download", func(w http.ResponseWriter, r *http.Request) {
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		//服务器mod下载
 	})
 	http.HandleFunc("/file/mods/delete", func(w http.ResponseWriter, r *http.Request) {
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		//服务器mod删除
 	})
 	http.HandleFunc("/file/mods/config/upload", func(w http.ResponseWriter, r *http.Request) {
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		//服务器mod配置上传
 	})
 	http.HandleFunc("/file/mods/config/download", func(w http.ResponseWriter, r *http.Request) {
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		//服务器mod配置下载
 	})
 	http.HandleFunc("/file/mods/config/delete", func(w http.ResponseWriter, r *http.Request) {
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		//服务器mod配置删除
@@ -127,7 +128,7 @@ func main() {
 
 	/* ---------------- 服务器控制url接口 ----------------*/
 	http.HandleFunc("/control/servercmd/start", func(w http.ResponseWriter, r *http.Request) {
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		//启动服务器
@@ -142,7 +143,7 @@ func main() {
 
 	})
 	http.HandleFunc("/control/servercmd/restart", func(w http.ResponseWriter, r *http.Request) {
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		//重启服务器
@@ -156,7 +157,7 @@ func main() {
 
 	})
 	http.HandleFunc("/control/servercmd/stop", func(w http.ResponseWriter, r *http.Request) {
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		//关闭服务器
@@ -172,7 +173,7 @@ func main() {
 	/* ---------------- websocket ----------------*/
 	http.HandleFunc("/ws/servercmd/status", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.URL.Path)
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		if serverRunning {
@@ -186,7 +187,7 @@ func main() {
 	/* ---------------- 控制台显示 ----------------*/
 	http.HandleFunc("/dashboard", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(r.URL.Path)
-		if RedirectHandler(w, r) {
+		if CheckCookie(w, r) {
 			return
 		}
 		Dashboard(w, r)
@@ -201,28 +202,34 @@ func main() {
 
 	/* ---------------- 中间件 ----------------*/
 	http.HandleFunc("/redirect/2/dashboard", func(w http.ResponseWriter, r *http.Request) {
-		RedirectHandler(w, r)
+		CheckCookie(w, r)
 	})
 
 	/* ---------------- 静态资源路径 ----------------*/
-	http.HandleFunc("/js/backendFunc.js", ServeJavaScriptFile("backendFunc.js"))
-	http.HandleFunc("/js/login.js", ServeJavaScriptFile("login.js"))
-	http.HandleFunc("/js/dashboard.js", ServeJavaScriptFile("dashboard.js"))
-	http.HandleFunc("/js/websocket.js", ServeJavaScriptFile("websocket.js"))
+	http.HandleFunc("/js/backendFunc.js", ServeStaticFile("backendFunc.js", "js"))
+	http.HandleFunc("/js/login.js", ServeStaticFile("login.js", "js"))
+	http.HandleFunc("/js/dashboard.js", ServeStaticFile("dashboard.js", "js"))
+	http.HandleFunc("/js/websocket.js", ServeStaticFile("websocket.js", "js"))
+	http.HandleFunc("/css/dashboard.css", ServeStaticFile("dashboard.css", "css"))
 
 	// 启动Web服务器
 	http.ListenAndServe(":8080", nil)
 	fmt.Println("running……")
 }
 
-func ServeJavaScriptFile(filename string) http.HandlerFunc {
+func ServeStaticFile(filename string, fileext string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/javascript")
-		http.ServeFile(w, r, filepath.Join("static/js", filename))
+		if fileext == "js" {
+			w.Header().Set("Content-Type", "application/javascript")
+			http.ServeFile(w, r, filepath.Join("static/js", filename))
+		} else if fileext == "css" {
+			w.Header().Set("Content-Type", "text/css")
+			http.ServeFile(w, r, filepath.Join("static/css", filename))
+		}
 	}
 }
 
-func RedirectHandler(w http.ResponseWriter, r *http.Request) bool {
+func CheckCookie(w http.ResponseWriter, r *http.Request) bool {
 	if !weblogin.CheckIsLogined(r) {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return true

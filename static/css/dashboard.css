@@ -1,0 +1,16 @@
+.cmd-scrollable {
+    width: calc(99%-2px);
+    height: 200px;
+    overflow: hidden; 
+    border: 1px solid black;
+    display: block;
+  }
+
+  .cmd-scrollable:hover {
+    overflow-y: scroll; 
+  }
+
+  .cmd-scrollable-content {
+    height: 200px; 
+    padding: 10px;
+  }

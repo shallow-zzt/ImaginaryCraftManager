@@ -3,12 +3,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Imaginary Craft Manager</title>
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
     <h1 id="fileListTitle"></h1>     
     <div id="fileList"></div>
     <div id="fileControl"></div>    
-    <div id="serverCmd"></div>
     <button onclick="switchFileMode2Mods()">显示mod文件</button>
     <button onclick="switchFileMode2ModsConfig()">显示mod配置文件</button>     
     <button onclick="switchFileMode2None()">不显示</button>       
@@ -17,11 +17,13 @@
     <button onclick="stopProcess()">关闭服务器</button>     
     <button onclick="restartProcess()">重启服务器</button>
     <br>
-    <button onclick="startWebSocket()">开启cmd监控</button>     
-    <br>
     <button onclick="logoutFunc()">登出账号</button>
     <button onclick="refreshFunc()">重置账号</button>       
-    <div id="output"></div>    
+    <div class="cmd-scrollable" id="cmdFrame">
+        <div class="cmd-scrollable-content" id="cmdOutput">
+
+        </div>
+    </div>    
 	<script src="./js/backendFunc.js"></script>               
 	<script src="./js/dashboard.js"></script>
 	<script src="./js/websocket.js"></script>    

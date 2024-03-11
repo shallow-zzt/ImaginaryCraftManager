@@ -1,5 +1,8 @@
 var showFileMode = 'none';
 
+var cmdOutput = document.getElementsByClassName('cmd-scrollable');
+cmdOutput.scrollTop = cmdOutput.scrollHeight;
+
 function switchFileMode2ModsConfig(){ 
     document.getElementById('fileListTitle').innerHTML = `Mods配置文件列表`; 
     document.getElementById('fileList').innerHTML = ``;    
@@ -29,4 +32,14 @@ function switchFileMode2None(){
     document.getElementById('fileList').innerHTML = ``;      
     document.getElementById('fileControl').innerHTML = ``;
     showFileMode = 'none'
+}
+
+function showCmdOutput(){
+    //cmdOutput.style.display = "block";
+    startWebSocket();
+}
+
+function clearCmdOutput(){
+    document.getElementById('cmdOutput').innerHTML= ``;
+    //cmdOutput.style.display = "none";
 }

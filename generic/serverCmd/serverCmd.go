@@ -61,11 +61,13 @@ func CloseProcessAndPipe(cm *CommandManager) error {
 	//我不清楚这样做，会不会把所有需要java运行的程序都关了 ^_^
 
 	//经过测试，至少客户端和服务端同时启动时，不会关闭客户端 ^_^
-	exec.Command("taskkill", "/f", "/im", "java.exe").Run()
+
 	if err := cm.cmd.Process.Kill(); err != nil {
 		fmt.Println("进程关闭失败:", err)
+		exec.Command("taskkill", "/f", "/im", "java.exe").Run()
 		return err
 	}
+	exec.Command("taskkill", "/f", "/im", "java.exe").Run()
 
 	return nil
 }
@@ -91,7 +93,6 @@ func CmdSocket(w http.ResponseWriter, r *http.Request, cm *CommandManager) {
 		fmt.Println(err)
 		return
 	}
-	defer conn.Close()
 
 	go func() {
 		for cm.stdout.Scan() {
@@ -103,4 +104,5 @@ func CmdSocket(w http.ResponseWriter, r *http.Request, cm *CommandManager) {
 			}
 		}
 	}()
+	//defer conn.Close()
 }
