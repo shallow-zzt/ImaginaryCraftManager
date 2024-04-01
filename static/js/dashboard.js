@@ -3,6 +3,10 @@ var showFileMode = 'none';
 var cmdOutput = document.getElementsByClassName('cmd-scrollable');
 cmdOutput.scrollTop = cmdOutput.scrollHeight;
 
+function setDefaultServerConfig(){
+    setServerConfigs();
+}
+
 function switchFileMode2ModsConfig(){ 
     document.getElementById('fileListTitle').innerHTML = `Mods配置文件列表`; 
     document.getElementById('fileList').innerHTML = ``;    
@@ -41,3 +45,5 @@ function showCmdOutput(){
 function clearCmdOutput(){
     document.getElementById('cmdOutput').innerHTML= ``;
 }
+
+setDefaultServerConfig();

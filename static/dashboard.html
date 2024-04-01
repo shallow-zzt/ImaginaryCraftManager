@@ -45,14 +45,7 @@
                 <select id="generate-structures" name="generate-structures">
                     <option value="true">开</option>
                     <option value="false">关</option>
-                </select>                                              
-                <label for="level-type">游戏难度</label>
-                <select id="level-type" name="level-type">
-                    <option value="peaceful">和平</option>
-                    <option value="easy">简单</option>
-                    <option value="normal">普通</option>
-                    <option value="hard">困难</option>
-                </select>                      
+                </select>                                                                 
             </div>
             <button type="submit">提交更改</button>
         </form>
@@ -69,10 +62,10 @@
                 <br>
                 <label for="level-type">地图类型</label>
                 <select id="level-type" name="level-type">
-                    <option value="default">默认</option>
-                    <option value="flat">超平坦</option>
-                    <option value="large biomes">巨型生物群系</option>
-                    <option value="amplified">放大化</option>
+                    <option value="minecraft\:normal">默认</option>
+                    <option value="minecraft\:flat">超平坦</option>
+                    <option value="minecraft\:large_biomes">巨型生物群系</option>
+                    <option value="minecraft\:amplified">放大化</option>
                 </select>
                 <label for="allow-nether">启用下界</label>
                 <select id="allow-nether" name="allow-nether">
@@ -80,7 +73,7 @@
                     <option value="false">关</option>
                 </select>
                 <br>
-                <label for="generator-settings">额外生成设置</label>
+                <label for="generator-settings">额外生成设置(可空)</label>
                 <input type="text" id="generator-settings" name="generator-settings">
             </div>
             <button type="submit">提交更改</button>
@@ -152,10 +145,10 @@
                     <option value="false">关</option>
                 </select>                                                                                  
                 <br>
-                <label for="resource-pack">使用的资源包url</label>
+                <label for="resource-pack">使用的资源包url(关闭时可空)</label>
                 <input type="text" id="resource-pack" name="resource-pack">
                 <br>
-                <label for="resource-pack-prompt">资源包下载提示语</label>
+                <label for="resource-pack-prompt">资源包下载提示语(关闭时可空)</label>
                 <input type="text" id="resource-pack-prompt" name="resource-pack-prompt">
 
             </div>
@@ -177,16 +170,11 @@
                     <option value="false">关</option>
                 </select>      
                 <br>       
-                <label for="enable-query">启用外部调用</label>
+                <label for="enable-query">启用外部查询</label>
                 <select id="enable-query" name="enable-query">
                     <option value="true">开</option>
                     <option value="false">关</option>
-                </select>           
-                <label for="enable-rcon">启用远程控制rcon</label>
-                <select id="enable-rcon" name="enable-rcon">
-                    <option value="true">开</option>
-                    <option value="false">关</option>
-                </select>                                                             
+                </select>                                                                        
                 <br>                                                                    
                 <label for="sync-chunk-writes">区块同步写入</label>
                 <select id="sync-chunk-writes" name="sync-chunk-writes">

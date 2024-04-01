@@ -22,6 +22,7 @@ func generateRandomString(length int) string {
 func GenLoginToken(filePath string) {
 	username := generateRandomString(16)
 	password := generateRandomString(16)
+	rconPassword := generateRandomString(16)
 
 	// 创建INI文件
 	cfg := ini.Empty()
@@ -33,6 +34,7 @@ func GenLoginToken(filePath string) {
 
 	section.ReflectFrom(&struct{ Username string }{username})
 	section.ReflectFrom(&struct{ Password string }{password})
+	section.ReflectFrom(&struct{ Rcon_Password string }{rconPassword})
 
 	err = cfg.SaveTo(filePath)
 	if err != nil {

@@ -14,8 +14,15 @@ func TestServerSetMemory(t *testing.T) {
 		return
 	}
 }
+func TestGetServerSetMemory(t *testing.T) {
+	memoryValue := GetCmdParameter("..\\..\\fabric-server")
+	fmt.Println(memoryValue)
+	return
+}
 
-func TestServerCmd(t *testing.T, w http.ResponseWriter, r *http.Request) {
+func TestServerCmd(t *testing.T) {
+	var w http.ResponseWriter
+	var r *http.Request
 	manager, err := NewCmdManager("..\\..\\fabric-server")
 	if err != nil {
 		fmt.Println("cmd管道创建失败:", err)

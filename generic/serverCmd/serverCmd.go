@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"regexp"
 	"strconv"
 
 	"github.com/gorilla/websocket"
@@ -25,7 +26,6 @@ func SetCmdParameter(serverDir string, serverMemory int) error {
 
 	serverRunCommand := "java -Xmx" + strconv.Itoa(serverMemory) + "G -jar fabric-server-launch.jar nogui"
 	cmdFileName := serverDir + "\\start.bat"
-
 	file, err := os.Create(cmdFileName)
 	if err != nil {
 		fmt.Println("cmd运行脚本创建失败:", err)
@@ -39,6 +39,27 @@ func SetCmdParameter(serverDir string, serverMemory int) error {
 		return err
 	}
 	return nil
+}
+
+func GetCmdParameter(serverDir string) string {
+	memoryRegex := "-Xmx(.*)G"
+	cmdFileName := serverDir + "\\start.bat"
+	file, err := os.Open(cmdFileName)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	defer file.Close()
+
+	buf := make([]byte, 1024)
+	n, err := file.Read(buf)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	re := regexp.MustCompile(memoryRegex)
+	matches := re.FindAllStringSubmatch(string(buf[:n]), 1)[0][1]
+	return matches
 }
 
 func NewCmdManager(serverDir string) (*CommandManager, error) {

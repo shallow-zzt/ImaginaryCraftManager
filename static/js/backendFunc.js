@@ -47,6 +47,22 @@ function showModConfigs() {
         })
         .catch(error => console.error('Error:', error));
 }
+function setServerConfigs(){
+    fetch('/api/server/setting')
+        .then(response => response.json())
+        .then(data => {
+            var settingClass = Object.keys(data);
+            for(var i=0;i<settingClass.length;i++){
+                subData = data[settingClass[i]];
+                var settingKeys = Object.keys(subData);
+                for(var j=0;j<settingKeys.length;j++){
+                    contentData = subData[settingKeys[j]];
+                    document.getElementById(settingKeys[j]).value = contentData;
+                }
+            }
+        })
+        .catch(error => console.error('Error:', error));    
+}
 
 function startProcess() {
     fetch('/control/servercmd/start')
@@ -81,3 +97,4 @@ function refreshFunc() {
     .then(response => location.reload())
         .catch(error => console.error('Error:', error));
 }
+

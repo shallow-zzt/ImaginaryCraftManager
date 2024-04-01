@@ -4,6 +4,7 @@ import (
 	"ImaginaryCraftManager/auth/weblogin"
 	"ImaginaryCraftManager/generic/fileManage"
 	"ImaginaryCraftManager/generic/serverCmd"
+	"ImaginaryCraftManager/generic/serverConfig"
 	"ImaginaryCraftManager/jsonStructs/requestStructs/authStructs"
 	"ImaginaryCraftManager/jsonStructs/responseStructs/pathStructs"
 	"encoding/json"
@@ -65,6 +66,7 @@ func main() {
 		if CheckCookie(w, r) {
 			return
 		}
+		ShowServerConfig(w, r)
 		//服务器设置查看
 	})
 	http.HandleFunc("/api/server/status", func(w http.ResponseWriter, r *http.Request) {
@@ -297,6 +299,18 @@ func Logoutfunc(w http.ResponseWriter, r *http.Request) {
 		Path:    "/",
 	}
 	http.SetCookie(w, cookie)
+}
+
+func ShowServerConfig(w http.ResponseWriter, r *http.Request) {
+	serverConfigList, err := serverConfig.ReadServerConfig("fabric-server/server.properties")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	response := serverConfig.WriteServerConfig2Json(serverConfigList, "fabric-server")
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 func ShowMods(w http.ResponseWriter, r *http.Request) {
