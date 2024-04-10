@@ -17,7 +17,28 @@ function authLogin(formData){
         }
     })
     .then(data => {
-       // location.reload();
+    })
+    .catch(error => {
+        alert(error.message);
+    });
+}
+
+function setServerConfigs(formData){
+    fetch('/setting/modify/servercmd/configs', {
+        method: 'POST',
+        body: JSON.stringify(Object.fromEntries(formData)),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            alert("修改失败");
+        } else {
+            alert("修改成功");
+        }
+    })
+    .then(data => {
     })
     .catch(error => {
         alert(error.message);
@@ -29,8 +50,10 @@ function showMods() {
         .then(response => response.json())
         .then(data => {
             var mods = data["mods"];
+            var modnums = data["modnums"];
+            document.getElementById('fileListTitle').innerHTML += `(${modnums}个)`;
             for(var i=0;i<mods.length;i++){
-                document.getElementById('fileList').innerHTML += `${mods[i]}<br>`;              
+                document.getElementById('fileList').innerHTML += `${mods[i]}<br>`;           
             }
         })
         .catch(error => console.error('Error:', error));
@@ -41,13 +64,15 @@ function showModConfigs() {
         .then(response => response.json())
         .then(data => {
             var config = data["configs"];
+            var confignums = data["confignums"];
+            document.getElementById('fileListTitle').innerHTML += `(${confignums}个)`;
             for(var i=0;i<config.length;i++){
                 document.getElementById('fileList').innerHTML += `${config[i]}<br>`;              
             }
         })
         .catch(error => console.error('Error:', error));
 }
-function setServerConfigs(){
+function showServerConfigs(){
     fetch('/api/server/setting')
         .then(response => response.json())
         .then(data => {

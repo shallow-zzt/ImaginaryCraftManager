@@ -50,6 +50,7 @@
             <button type="submit">提交更改</button>
         </form>
     </div>
+    <hr>
     <div id="serverWorldSettingTitle">世界生成设置</div>
     <div id="serverWorldSetting">
         <form id="serverWorldSettingForm">
@@ -79,6 +80,7 @@
             <button type="submit">提交更改</button>
         </form>
     </div>
+    <hr>
     <div id="serverNetworkingSettingTitle">网络性能设置</div>
     <div id="serverNetworkingSetting">
         <form id="serverNetworkingSettingForm">
@@ -110,6 +112,7 @@
             <button type="submit">提交更改</button>
         </form>
     </div>
+    <hr>
     <div id="serverPlayerSettingTitle">玩家管理设置</div>
     <div id="serverPlayerSetting">
         <form id="serverPlayerSettingForm">                                                                                 
@@ -135,6 +138,7 @@
             <button type="submit">提交更改</button>
         </form>
     </div>
+    <hr>
     <div id="serverResourcesPackSettingTitle">资源包设置</div>
     <div id="serverResourcesPackSetting">
         <form id="serverResourcesPackSettingForm">                                                                                 
@@ -155,6 +159,7 @@
             <button type="submit">提交更改</button>
         </form>
     </div>
+    <hr>
     <div id="serverAdditionalSettingTitle">其他设置</div>
     <div id="serverAdditionalSetting">
         <form id="serverAdditionalSettingForm">                                                                                 
@@ -203,29 +208,32 @@
             <button type="submit">提交更改</button>
         </form>
     </div>
-
+    <hr>
+    
+    <button onclick="switchFileMode2Mods()">显示mod文件</button>
+    <button onclick="switchFileMode2ModsConfig()">显示mod配置文件</button>     
+    <button onclick="switchFileMode2None()">不显示</button>
+    <div id="fileControl"></div>    
     <h1 id="fileListTitle"></h1>     
     <div class="cmd-scrollable" id="cmdFrame">
         <div class="cmd-scrollable-content" id="fileList">
 
         </div>
     </div>    
-    <div id="fileControl"></div>        
-    <button onclick="switchFileMode2Mods()">显示mod文件</button>
-    <button onclick="switchFileMode2ModsConfig()">显示mod配置文件</button>     
-    <button onclick="switchFileMode2None()">不显示</button>       
+    <hr>
     <br>
     <button onclick="startProcess()">启动服务器</button>
     <button onclick="stopProcess()">关闭服务器</button>     
-    <button onclick="restartProcess()">重启服务器</button>
-    <br>
-    <button onclick="logoutFunc()">登出账号</button>
-    <button onclick="refreshFunc()">重置账号</button>       
+    <button onclick="restartProcess()">重启服务器</button>  
     <div class="cmd-scrollable" id="cmdFrame">
         <div class="cmd-scrollable-content" id="cmdOutput">
 
         </div>
     </div>    
+    <hr>
+    <br>
+    <button onclick="logoutFunc()">登出账号</button>
+    <button onclick="refreshFunc()">重置账号</button>     
 	<script src="./js/backendFunc.js"></script>               
 	<script src="./js/dashboard.js"></script>
 	<script src="./js/websocket.js"></script>    

@@ -1,10 +1,60 @@
 var showFileMode = 'none';
 
-var cmdOutput = document.getElementsByClassName('cmd-scrollable');
 cmdOutput.scrollTop = cmdOutput.scrollHeight;
 
 function setDefaultServerConfig(){
-    setServerConfigs();
+  showServerConfigs();
+}
+
+document.getElementById('serverGeneralSettingForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  var formData = new FormData(event.target);
+  console.log(formData);
+  setServerConfigs(formData);
+})
+document.getElementById('serverWorldSettingForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  var formData = new FormData(event.target);
+  console.log(formData);
+  setServerConfigs(formData);
+})
+document.getElementById('serverNetworkingSettingForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  var formData = new FormData(event.target);
+  console.log(formData);
+  setServerConfigs(formData);
+})
+document.getElementById('serverPlayerSettingForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  var formData = new FormData(event.target);
+  console.log(formData);
+  setServerConfigs(formData);
+})
+document.getElementById('serverResourcesPackSettingForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  var formData = new FormData(event.target);
+  console.log(formData);
+  setServerConfigs(formData);
+})
+document.getElementById('serverAdditionalSettingForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  var formData = new FormData(event.target);
+  console.log(formData);
+  setServerConfigs(formData);
+})
+
+function showFormContent(formId) {
+    var form = document.getElementById(formId);
+    var formData = new FormData(form);
+    for (var pair of formData.entries()) {
+      console.log(pair[0] + ": " + pair[1]);
+    }
 }
 
 function switchFileMode2ModsConfig(){ 

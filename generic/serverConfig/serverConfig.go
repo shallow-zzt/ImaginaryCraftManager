@@ -5,6 +5,7 @@ import (
 	"ImaginaryCraftManager/jsonStructs/requestStructs/serverSettingStructs"
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -31,13 +32,41 @@ func ReadServerConfig(filePath string) (map[string]string, error) {
 		value := strings.TrimSpace(parts[1])
 		properties[key] = value
 	}
-
 	if err := scanner.Err(); err != nil {
 		return nil, err
 	}
-
 	return properties, nil
+}
 
+func WriteProperty(filename, key, value string) error {
+	content, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	lines := strings.Split(string(content), "\n")
+
+	found := false
+	for i, line := range lines {
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) == 2 && strings.TrimSpace(parts[0]) == key {
+			lines[i] = fmt.Sprintf("%s=%s", key, value)
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		lines = append(lines, fmt.Sprintf("%s=%s", key, value))
+	}
+
+	updatedContent := strings.Join(lines, "\n")
+	err = ioutil.WriteFile(filename, []byte(updatedContent), 0644)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func WriteServerConfig2Json(serverConfig map[string]string, serverPath string) serverSettingStructs.AllServerSettings {

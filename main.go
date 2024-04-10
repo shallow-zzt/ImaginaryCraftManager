@@ -12,6 +12,7 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"time"
 )
 
@@ -77,10 +78,11 @@ func main() {
 	})
 
 	/* ---------------- 设置修改url接口 ----------------*/
-	http.HandleFunc("/setting/modify/servercmd/gamerule", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/setting/modify/servercmd/configs", func(w http.ResponseWriter, r *http.Request) {
 		if CheckCookie(w, r) {
 			return
 		}
+		SetServerConfigs(w, r)
 		//服务器游戏设置修改
 	})
 	http.HandleFunc("/setting/modify/servercmd/running", func(w http.ResponseWriter, r *http.Request) {
@@ -324,8 +326,9 @@ func ShowMods(w http.ResponseWriter, r *http.Request) {
 	}
 
 	modLists = append(modLists, fileNames...)
+	modnum := len(modLists)
 
-	response := pathStructs.ModPath{Mods: modLists}
+	response := pathStructs.ModPath{Mods: modLists, ModNums: modnum}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
@@ -341,10 +344,41 @@ func ShowModsConfigs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	configLists = append(configLists, fileNames...)
+	configNums := len(configLists)
 
-	response := pathStructs.ModConfigPath{Configs: configLists}
+	response := pathStructs.ModConfigPath{Configs: configLists, ConfigNums: configNums}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
+}
+
+func SetServerConfigs(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.Body)
+	var settingStruct map[string]string
+	err := json.NewDecoder(r.Body).Decode(&settingStruct)
+	if err != nil {
+		http.Error(w, "非法请求体", http.StatusBadRequest)
+		return
+	}
+
+	for key, value := range settingStruct {
+		if key == "server-memory" {
+			memorysize, err := strconv.Atoi(value)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			err = serverCmd.SetCmdParameter("fabric-server", memorysize)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+		} else {
+			serverConfig.WriteProperty("fabric-server/server.properties", key, value)
+		}
+
+	}
+	w.Header().Set("Content-Type", "application/json")
+
 }
 
 func StartCmd(w http.ResponseWriter, r *http.Request, cm *serverCmd.CommandManager) {
