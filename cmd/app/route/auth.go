@@ -16,31 +16,27 @@ func RouteAuth() {
 	handlers := rutils.Handlers{
 		"login": func(w http.ResponseWriter, r *http.Request) {
 			//初始登陆界面
-			LoginFunc(w, r)
+			loginFunc(w, r)
 		},
 		"logout": func(w http.ResponseWriter, r *http.Request) {
 			//登出账号
 			if CheckCookie(w, r) {
 				return
 			}
-			Logoutfunc(w, r)
+			logoutfunc(w, r)
 		},
 		"logout/refresh": func(w http.ResponseWriter, r *http.Request) {
 			//刷新账号信息并登出
 			if CheckCookie(w, r) {
 				return
 			}
-			RefreshLogin(w, r)
+			refreshLogin(w, r)
 		},
 	}
 	rg.AddRoute(handlers)
 }
 
-func LoginPage(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "static/index.html")
-}
-
-func LoginFunc(w http.ResponseWriter, r *http.Request) {
+func loginFunc(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "方法不允许", http.StatusMethodNotAllowed)
 		return
@@ -68,7 +64,7 @@ func LoginFunc(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "账号或者密码错误", http.StatusUnauthorized)
 }
 
-func Logoutfunc(w http.ResponseWriter, r *http.Request) {
+func logoutfunc(w http.ResponseWriter, r *http.Request) {
 	cookie := &http.Cookie{
 		Name:    "session",
 		Value:   "",
@@ -79,7 +75,7 @@ func Logoutfunc(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, cookie)
 }
 
-func RefreshLogin(w http.ResponseWriter, r *http.Request) {
+func refreshLogin(w http.ResponseWriter, r *http.Request) {
 
 	cookie := &http.Cookie{
 		Name:    "session",

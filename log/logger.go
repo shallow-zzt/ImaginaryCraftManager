@@ -41,7 +41,7 @@ func NewLogger(level string) {
 	case "info":
 		levelNum = INFO
 	case "warning", "warn":
-		levelNum = INFO
+		levelNum = WARNING
 	case "error":
 		levelNum = ERROR
 	case "fatal":

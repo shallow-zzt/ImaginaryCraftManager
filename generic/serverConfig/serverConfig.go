@@ -5,7 +5,6 @@ import (
 	"ImaginaryCraftManager/jsonStructs/requestStructs/serverSettingStructs"
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -32,14 +31,14 @@ func ReadServerConfig(filePath string) (map[string]string, error) {
 		value := strings.TrimSpace(parts[1])
 		properties[key] = value
 	}
-	if err := scanner.Err(); err != nil {
+	if err = scanner.Err(); err != nil {
 		return nil, err
 	}
 	return properties, nil
 }
 
 func WriteProperty(filename, key, value string) error {
-	content, err := ioutil.ReadFile(filename)
+	content, err := os.ReadFile(filename)
 	if err != nil {
 		return err
 	}
@@ -61,7 +60,7 @@ func WriteProperty(filename, key, value string) error {
 	}
 
 	updatedContent := strings.Join(lines, "\n")
-	err = ioutil.WriteFile(filename, []byte(updatedContent), 0644)
+	err = os.WriteFile(filename, []byte(updatedContent), 0644)
 	if err != nil {
 		return err
 	}
@@ -69,7 +68,7 @@ func WriteProperty(filename, key, value string) error {
 	return nil
 }
 
-func WriteServerConfig2Json(serverConfig map[string]string, serverPath string) serverSettingStructs.AllServerSettings {
+func WriteServerConfig2Json(serverConfig map[string]string, serverPath string) *serverSettingStructs.AllServerSettings {
 	var General serverSettingStructs.ServerGeneralSetting
 	var World serverSettingStructs.ServerWorldSetting
 	var Network serverSettingStructs.ServerNetworkingSetting
@@ -126,5 +125,5 @@ func WriteServerConfig2Json(serverConfig map[string]string, serverPath string) s
 	ServerJson.Resources = Resources
 	ServerJson.Additional = Additional
 
-	return ServerJson
+	return &ServerJson
 }

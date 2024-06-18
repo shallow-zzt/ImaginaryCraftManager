@@ -11,7 +11,7 @@ import (
 var users = map[string]string{}
 
 func RefreshUsers(filePath string) {
-	os.Remove(filePath)
+	_ = os.Remove(filePath)
 	GenLoginToken(filePath)
 }
 
@@ -35,7 +35,7 @@ func LoadUsers(filePath string) {
 	section := cfg.Section("User")
 	if section == nil {
 		fmt.Println("section读取失败，ini重新生成中……")
-		os.Remove(filePath)
+		_ = os.Remove(filePath)
 		GenLoginToken(filePath)
 		LoadUsers(filePath)
 		return
@@ -52,7 +52,7 @@ func CheckLogin(storedUser string, storedPassword string) bool {
 	return storedPassword == users[storedUser] && storedPassword != "" && storedUser != ""
 }
 
-// 检查用户是否已经登录的中间件
+// CheckIsLogined 检查用户是否已经登录的中间件
 func CheckIsLogined(r *http.Request) bool {
 	cookie, err := r.Cookie("session")
 	//fmt.Println(r.Cookies())

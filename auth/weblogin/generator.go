@@ -1,11 +1,9 @@
 package weblogin
 
 import (
-	"fmt"
-	"math/rand"
-	"os"
-
+	logger "ImaginaryCraftManager/log"
 	"github.com/go-ini/ini"
+	"math/rand"
 )
 
 // 生成随机字符串
@@ -28,18 +26,25 @@ func GenLoginToken(filePath string) {
 	cfg := ini.Empty()
 	section, err := cfg.NewSection("User")
 	if err != nil {
-		fmt.Printf("创建失败: %v\n", err)
-		os.Exit(1)
+		logger.Fatalf("创建失败: %v", err)
 	}
 
-	section.ReflectFrom(&struct{ Username string }{username})
-	section.ReflectFrom(&struct{ Password string }{password})
-	section.ReflectFrom(&struct{ Rcon_Password string }{rconPassword})
+	err = section.ReflectFrom(&struct{ Username string }{username})
+	if err != nil {
+		return
+	}
+	err = section.ReflectFrom(&struct{ Password string }{password})
+	if err != nil {
+		return
+	}
+	err = section.ReflectFrom(&struct{ Rcon_Password string }{rconPassword})
+	if err != nil {
+		return
+	}
 
 	err = cfg.SaveTo(filePath)
 	if err != nil {
-		fmt.Printf("INI保存失败: %v\n", err)
-		os.Exit(1)
+		logger.Fatalf("INI保存失败: %v", err)
 	}
 	//fmt.Println(username, password)
 }

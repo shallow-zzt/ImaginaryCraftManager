@@ -6,9 +6,9 @@ import (
 	"ImaginaryCraftManager/generic/fileManage"
 	"ImaginaryCraftManager/generic/serverConfig"
 	"ImaginaryCraftManager/jsonStructs/responseStructs/pathStructs"
+	logger "ImaginaryCraftManager/log"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -76,14 +76,13 @@ func showMods(w http.ResponseWriter, r *http.Request) {
 
 	fileNames, err := fileManage.GetAllFileNames(modPath)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatalln(err)
 		return
 	}
 
 	modLists = append(modLists, fileNames...)
-	modnum := len(modLists)
 
-	response := pathStructs.ModPath{Mods: modLists, ModNums: modnum}
+	response := pathStructs.ModPath{Mods: modLists, ModNums: len(modLists)}
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
@@ -97,14 +96,13 @@ func showModsConfigs(w http.ResponseWriter, r *http.Request) {
 
 	fileNames, err := fileManage.GetAllFileNames(configPath)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatalln(err)
 		return
 	}
 
 	configLists = append(configLists, fileNames...)
-	configNums := len(configLists)
 
-	response := pathStructs.ModConfigPath{Configs: configLists, ConfigNums: configNums}
+	response := pathStructs.ModConfigPath{Configs: configLists, ConfigNums: len(configLists)}
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {

@@ -2,7 +2,7 @@ package exceptions
 
 import "fmt"
 
-// 错误类型错误码
+// ErrorWithCode 错误类型错误码
 type ErrorWithCode struct {
 	Code    int
 	Message string

@@ -23,7 +23,7 @@ func RouteIndex() {
 				http.Redirect(w, r, "/dashboard", http.StatusFound)
 				return
 			}
-			LoginPage(w, r)
+			loginPage(w, r)
 		},
 	}
 	rg.AddRoute(handlers)
@@ -31,4 +31,8 @@ func RouteIndex() {
 func dashboard(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("调用成功")
 	http.ServeFile(w, r, "static/dashboard.html")
+}
+
+func loginPage(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "static/index.html")
 }
