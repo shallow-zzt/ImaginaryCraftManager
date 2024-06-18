@@ -1,0 +1,94 @@
+package route
+
+import (
+	"ImaginaryCraftManager/auth/weblogin"
+	"ImaginaryCraftManager/cmd/app/route/rutils"
+	"ImaginaryCraftManager/jsonStructs/requestStructs/authStructs"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"time"
+)
+
+func RouteAuth() {
+	/* ---------------- web访问控制 ----------------*/
+	rg := rutils.NewRouteGroup("auth")
+	handlers := rutils.Handlers{
+		"login": func(w http.ResponseWriter, r *http.Request) {
+			//初始登陆界面
+			LoginFunc(w, r)
+		},
+		"logout": func(w http.ResponseWriter, r *http.Request) {
+			//登出账号
+			if CheckCookie(w, r) {
+				return
+			}
+			Logoutfunc(w, r)
+		},
+		"logout/refresh": func(w http.ResponseWriter, r *http.Request) {
+			//刷新账号信息并登出
+			if CheckCookie(w, r) {
+				return
+			}
+			RefreshLogin(w, r)
+		},
+	}
+	rg.AddRoute(handlers)
+}
+
+func LoginPage(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "static/index.html")
+}
+
+func LoginFunc(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "方法不允许", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var user authStructs.User
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		http.Error(w, "非法请求体", http.StatusBadRequest)
+		return
+	}
+
+	if weblogin.CheckLogin(user.Username, user.Password) {
+		fmt.Println("登陆成功")
+		expiration := time.Now().Add(24 * time.Hour)
+		cookie := &http.Cookie{
+			Name:    "session",
+			Value:   user.Username,
+			Expires: expiration,
+			Path:    "/",
+		}
+		http.SetCookie(w, cookie)
+		return
+	}
+	http.Error(w, "账号或者密码错误", http.StatusUnauthorized)
+}
+
+func Logoutfunc(w http.ResponseWriter, r *http.Request) {
+	cookie := &http.Cookie{
+		Name:    "session",
+		Value:   "",
+		Expires: time.Unix(1, 0),
+		MaxAge:  -1,
+		Path:    "/",
+	}
+	http.SetCookie(w, cookie)
+}
+
+func RefreshLogin(w http.ResponseWriter, r *http.Request) {
+
+	cookie := &http.Cookie{
+		Name:    "session",
+		Value:   "",
+		Expires: time.Unix(1, 0),
+		MaxAge:  -1,
+		Path:    "/",
+	}
+	http.SetCookie(w, cookie)
+	weblogin.RefreshUsers("authorities.ini")
+	weblogin.LoadUsers("authorities.ini")
+}
