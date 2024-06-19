@@ -25,6 +25,9 @@ type Group struct {
 // AddRoute 批量增加路由
 func (c *Group) AddRoute(handlers Handlers) {
 	for pattern, handler := range handlers {
+		if strings.HasPrefix(pattern, "/") {
+			pattern = pattern[1:]
+		}
 		http.HandleFunc(c.urlPrefix+pattern, handler)
 	}
 }

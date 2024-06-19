@@ -1,6 +1,7 @@
 package serverCmd
 
 import (
+	logger "ImaginaryCraftManager/log"
 	"bufio"
 	"fmt"
 	"net/http"
@@ -46,7 +47,7 @@ func GetCmdParameter(serverDir string) string {
 	cmdFileName := serverDir + "\\start.bat"
 	file, err := os.Open(cmdFileName)
 	if err != nil {
-		fmt.Println(err)
+		logger.Errorf("GetCmdParameter: 打开批处理文件失败: %v", err)
 		return ""
 	}
 	defer file.Close()
@@ -84,11 +85,11 @@ func CloseProcessAndPipe(cm *CommandManager) error {
 	//经过测试，至少客户端和服务端同时启动时，不会关闭客户端 ^_^
 
 	if err := cm.cmd.Process.Kill(); err != nil {
-		fmt.Println("进程关闭失败:", err)
+		logger.Errorf("CloseProcessAndPipe: 进程关闭失败: %v", err)
 		exec.Command("taskkill", "/f", "/im", "java.exe").Run()
 		return err
 	}
-	fmt.Println("关闭成功")
+	logger.Debugln("CloseProcessAndPipe: 关闭成功")
 	exec.Command("taskkill", "/f", "/im", "java.exe").Run()
 
 	return nil
@@ -96,8 +97,8 @@ func CloseProcessAndPipe(cm *CommandManager) error {
 
 func CmdRecording(w http.ResponseWriter, r *http.Request, cm *CommandManager) (javaPID int, err error) {
 
-	if err := cm.cmd.Start(); err != nil {
-		fmt.Println("服务器启动失败:", err)
+	if err = cm.cmd.Start(); err != nil {
+		logger.Errorf("CmdRecording: 服务器启动失败 : %v", err)
 		return 0, err
 	}
 
@@ -108,21 +109,20 @@ func CmdRecording(w http.ResponseWriter, r *http.Request, cm *CommandManager) (j
 }
 
 func CmdSocket(w http.ResponseWriter, r *http.Request, cm *CommandManager) {
-	// var outputLines []string
-	var output string
+	var output *[]byte // 这里更改使用了指针切片，我想尽可能地降低复制结构体的开销。
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		fmt.Println(err)
+		logger.Errorf("CmdSocket: %v", err)
 		return
 	}
 
 	go func() {
 		for cm.stdout.Scan() {
-			output = cm.stdout.Text()
-			fmt.Println(output) // 将命令行输出打印到控制台
-			err := conn.WriteMessage(websocket.TextMessage, []byte(output))
+			*output = cm.stdout.Bytes()
+			fmt.Println(string(*output)) // 将命令行输出打印到控制台
+			err = conn.WriteMessage(websocket.TextMessage, *output)
 			if err != nil {
-				fmt.Println(err)
+				logger.Errorf("CmdSocket: %v", err)
 			}
 		}
 	}()

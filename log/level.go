@@ -1,6 +1,6 @@
 package logger
 
-var (
+const (
 	DEBUG   = 5
 	INFO    = 4
 	WARNING = 3
